@@ -30,3 +30,28 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
+
+
+
+from django.db import models
+from materials.models import Course, Lesson
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class Payment(models.Model):
+    PAYMENT_METHODS = (
+        ('cash', 'Cash'),
+        ('transfer', 'Bank Transfer'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.SET_NULL)
+    lesson = models.ForeignKey(Lesson, null=True, blank=True, on_delete=models.SET_NULL)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS)
+
+    def __str__(self):
+        return f"{self.user} - {self.amount} - {self.payment_method}"
