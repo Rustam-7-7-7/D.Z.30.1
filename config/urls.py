@@ -23,4 +23,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('materials.urls')),  # Здесь мы подключаем маршруты из приложения materials
+    path('', include('users.urls')), # Подключаем маршруты из приложения users
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
