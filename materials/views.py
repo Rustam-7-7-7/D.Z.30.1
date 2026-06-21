@@ -62,3 +62,36 @@ class SubscriptionView(APIView):
             message = 'Subscription added'
 
         return Response({"message": message})
+
+
+from django.http import JsonResponse
+from django.views import View
+from .models import Course
+from .utils import create_stripe_product_and_price
+import stripe
+
+
+class CreateCheckoutSessionView(View):
+    def post(self, request, course_id):
+        try:
+            # Получаем курс по его ID
+            course = Course.objects.get(id=course_id)
+
+            # Создаем продукт и цену в Stripe
+            _, price = create_stripe_product_and_price(course)
+
+            # Создаем сессию Stripe Checkout
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price': price.id,
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url='https://yourdomain.com/success/',
+                cancel_url='https://yourdomain.com/cancel/',
+            )
+
+            return JsonResponse({'sessionId': checkout_session.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

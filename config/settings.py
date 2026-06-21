@@ -131,3 +131,16 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+import os
+from dotenv import load_dotenv
+
+# Загрузить переменные окружения из .env файла
+load_dotenv()
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+import stripe
+
+stripe.api_key = STRIPE_SECRET_KEY
