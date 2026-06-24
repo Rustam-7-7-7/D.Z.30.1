@@ -71,14 +71,22 @@ from .utils import create_stripe_product_and_price
 import stripe
 
 
-class CreateCheckoutSessionView(View):
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class CreateCheckoutSessionView(APIView):
     def post(self, request, course_id):
         try:
             # Получаем курс по его ID
             course = Course.objects.get(id=course_id)
 
             # Создаем продукт и цену в Stripe
-            _, price = create_stripe_product_and_price(course)
+            product = stripe.Product.create(name=course.title)
+            price = stripe.Price.create(
+                unit_amount=int(course.price * 100),  # цена в центах
+                currency='usd',
+                product=product.id,
+            )
 
             # Создаем сессию Stripe Checkout
             checkout_session = stripe.checkout.Session.create(
@@ -92,6 +100,13 @@ class CreateCheckoutSessionView(View):
                 cancel_url='https://yourdomain.com/cancel/',
             )
 
-            return JsonResponse({'sessionId': checkout_session.id})
+            # Возвращаем sessionId и URL сессии
+            return JsonResponse({
+                'sessionId': checkout_session.id,
+                'url': checkout_session.url
+            })
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+        return Response({'status': 'success'})

@@ -12,6 +12,7 @@
 ```
 git clone https://github.com/Rustam-7-7-7/D.Z.30.1.git
 ```
+Создайте файл .env из копии файла .env.example и замените многоточия реальными данными
 
 
 
