@@ -96,7 +96,7 @@ class CreateCheckoutSessionView(APIView):
                     'quantity': 1,
                 }],
                 mode='payment',
-                success_url='https://yourdomain.com/success/',
+                success_url='http://localhost:8000/success/',
                 cancel_url='https://yourdomain.com/cancel/',
             )
 
