@@ -6,6 +6,8 @@ from users.permissions import IsModerator, IsOwner
 
 from .paginators import StandardResultsSetPagination
 
+from config.tasks import send_course_update_email
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
@@ -23,6 +25,17 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()  # Сохраняем и получаем обновленный объект курса
+
+        # Получаем подписчиков из модели Subscription
+        subscriptions = Subscription.objects.filter(course=instance)
+
+        # Отправляем письма подписчикам
+        for subscription in subscriptions:
+            send_course_update_email.delay(instance.id, subscription.user.email)
+
 
 class LessonListCreate(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()

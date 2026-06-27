@@ -144,3 +144,24 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 import stripe
 
 stripe.api_key = STRIPE_SECRET_KEY
+
+
+
+from celery.schedules import crontab
+
+load_dotenv()
+
+CELERY_BROKER_URL = os.getenv('REDIS_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL')
+
+CELERY_BEAT_SCHEDULE = {
+    'deactivate-inactive-users': {
+        'task': 'comfig.tasks.deactivate_inactive_users',
+        'schedule': crontab(hour=0, minute=0),  # Ежедневно в полночь
+    },
+}
+
+TIME_ZONE = 'UTC'
+CELERY_TIMEZONE = 'UTC'
