@@ -15,6 +15,22 @@ git clone https://github.com/Rustam-7-7-7/D.Z.30.1.git
 Создайте файл .env из копии файла .env.example и замените многоточия реальными данными
 
 
+## Запуск проекта
+
+### Предварительные требования
+
+- Установленный Docker и Docker Compose
+
+### Запуск
+
+Запустите все сервисы с помощью Docker Compose:
+
+    ```bash
+    docker-compose up --build
+    ```
+
+Приложение будет доступно по адресу `http://localhost:8000`.
+
 
 
 
